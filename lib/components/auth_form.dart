@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:chat/components/user_image_picker.dart';
 import 'package:chat/models/auth_form_data.dart';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
-  const AuthForm({super.key});
+  final void Function(AuthFormData) onSubmit;
+
+  const AuthForm({Key? key, required this.onSubmit});
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -12,9 +17,27 @@ class _AuthFormState extends State<AuthForm> {
   final _formKey = GlobalKey<FormState>();
   final _formData = AuthFormData();
 
+  void handleImagePick(File image) {
+    _formData.image = image;
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: Colors.redAccent,
+      ),
+    );
+  }
+
   void _submit() {
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
+
+    if (_formData.image == null && _formData.isSignup) {
+      return _showError("Imagem não selecionada");
+    }
+    widget.onSubmit(_formData);
   }
 
   @override
@@ -27,6 +50,10 @@ class _AuthFormState extends State<AuthForm> {
           key: _formKey,
           child: Column(
             children: [
+              if (_formData.isSignup)
+                UserImagePicker(
+                  onImagePick: handleImagePick,
+                ),
               if (_formData.isSignup)
                 TextFormField(
                   key: const ValueKey('name'),
@@ -48,8 +75,8 @@ class _AuthFormState extends State<AuthForm> {
                 decoration: const InputDecoration(labelText: 'E-mail'),
                 validator: (localEmail) {
                   final email = localEmail ?? '';
-                  if (!email.contains('@')) {
-                    return 'E-mail nformado não é válido.';
+                  if (!email.contains("@")) {
+                    return 'Digite um e-mail válido';
                   }
                   return null;
                 },
@@ -72,6 +99,7 @@ class _AuthFormState extends State<AuthForm> {
               ElevatedButton(
                 onPressed: _submit,
                 child: Text(_formData.isLogin ? 'Entrar' : 'Cadastrar'),
+                style: ButtonStyle(backgroundColor: null),
               ),
               TextButton(
                 onPressed: () {

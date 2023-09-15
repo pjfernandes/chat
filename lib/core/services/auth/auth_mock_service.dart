@@ -21,7 +21,9 @@ class AuthMockService implements AuthService {
     return null;
   }
 
-  Stream<ChatUser?> get userChanges {}
+  Stream<ChatUser?> get userChanges {
+    return _userStream;
+  }
 
   Future<void> signup(
     String name,
@@ -35,6 +37,8 @@ class AuthMockService implements AuthService {
       email: email,
       imageUrl: image.path,
     );
+    _users.putIfAbsent(email, () => newUser);
+    _updateUser(newUser);
   }
 
   Future<void> login(

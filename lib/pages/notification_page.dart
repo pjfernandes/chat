@@ -11,7 +11,7 @@ class NotificationPage extends StatelessWidget {
     final items = service.items;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Minhas Notificações"),
+        title: const Text("Minhas Notificações"),
       ),
       body: Center(
           child: ListView.builder(

@@ -77,6 +77,10 @@ class AuthFirebaseService implements AuthService {
     String password,
   ) async {
     //_updateUser(_users[email]);
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
   }
 
   @override

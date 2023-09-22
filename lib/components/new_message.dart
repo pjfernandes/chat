@@ -17,7 +17,7 @@ class _NewMessageState extends State<NewMessage> {
     final user = AuthService().currentUser;
 
     if (user != null) {
-      ChatService().save(message, user);
+      await ChatService().save(message, user);
     }
     messageController.clear();
   }
@@ -39,7 +39,7 @@ class _NewMessageState extends State<NewMessage> {
           ),
         ),
         IconButton(
-          onPressed: () => message.trim().isEmpty ? null : sendMessage(),
+          onPressed: () => message.trim().isEmpty ? null : sendMessage,
           icon: const Icon(Icons.send),
         )
       ],

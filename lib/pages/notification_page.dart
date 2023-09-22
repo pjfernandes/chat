@@ -14,14 +14,15 @@ class NotificationPage extends StatelessWidget {
         title: const Text("Minhas Notificações"),
       ),
       body: Center(
-          child: ListView.builder(
-        itemCount: service.itemCount,
-        itemBuilder: (context, index) => ListTile(
-          title: Text(items[index].title),
-          subtitle: Text(items[index].body),
-          onTap: () => service.remove(index),
+        child: ListView.builder(
+          itemCount: service.itemCount,
+          itemBuilder: (context, index) => ListTile(
+            title: Text(items[index].title),
+            subtitle: Text(items[index].body),
+            onTap: () => service.remove(index),
+          ),
         ),
-      )),
+      ),
     );
   }
 }

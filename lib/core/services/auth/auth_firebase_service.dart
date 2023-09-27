@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 class AuthFirebaseService implements AuthService {
   // static const defaultUser = ChatUser(
   //   id: '456',
@@ -46,39 +48,37 @@ class AuthFirebaseService implements AuthService {
 
   @override
   Future<void> signup(
-    String name,
-    String email,
-    String password,
-    File? image,
-  ) async {
-    // final newUser = ChatUser(
-    //   id: Random().nextDouble().toString(),
-    //   name: name,
-    //   email: email,
-    //   imageUrl: image?.path ?? '/assets/images/avatar.png',
-    // );
-    // _users.putIfAbsent(email, () => newUser);
-    // _updateUser(newUser);
-    final auth = FirebaseAuth.instance;
+      String name, String email, String password, File? image) async {
+    final signup = await Firebase.initializeApp(
+      name: 'userSignup',
+      options: Firebase.app().options,
+    );
+
+    final auth = FirebaseAuth.instanceFor(app: signup);
+
     UserCredential credential = await auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
 
-    if (credential.user == null) return;
+    if (credential.user != null) {
+      // 1. Upload da foto do usuário
+      final imageName = '${credential.user!.uid}.jpg';
+      final imageUrl = await _upLoadUserImage(image, imageName);
 
-    //1) Upload da foto do usuário
-    final imageName = "${credential.user!.uid}.jpg";
-    final imageUrl = await _upLoadUserImage(image, imageName);
+      // 2. atualizar os atributos do usuário
+      await credential.user?.updateDisplayName(name);
+      await credential.user?.updatePhotoURL(imageUrl);
 
-    //2) Atualizar os atributos do usuário
-    await credential.user?.updateDisplayName(name);
-    await credential.user?.updatePhotoURL(imageUrl);
+      // 2.5 fazer o login do usuário
+      await login(email, password);
 
-    //3) Salvar o usuário no BD
-    await _saveChatUser(
-      _toChatUser(credential.user!, imageUrl),
-    );
+      // 3. salvar usuário no banco de dados (opcional)
+      _currentUser = _toChatUser(credential.user!, imageUrl);
+      await _saveChatUser(_currentUser!);
+    }
+
+    await signup.delete();
   }
 
   @override

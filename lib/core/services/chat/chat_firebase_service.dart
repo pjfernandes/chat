@@ -15,12 +15,20 @@ class ChatFirebaseService implements ChatService {
           fromFirestore: fromFirestore,
           toFirestore: toFirestore,
         )
+        .orderBy('createdAt', descending: true)
         .snapshots();
 
-    return snapshots.map((snapshot) {
-      return snapshot.docs.map((doc) {
-        return doc.data();
-      }).toList();
+    return Stream<List<ChatMessage>>.multi((controller) {
+      snapshots.listen(
+        (snapshot) {
+          List<ChatMessage> lista = snapshot.docs.map(
+            (doc) {
+              return doc.data();
+            },
+          ).toList();
+          controller.add(lista);
+        },
+      );
     });
 
     // return Stream<List<ChatMessage>>.multi((controller) {

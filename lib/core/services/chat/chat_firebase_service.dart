@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'dart:math';
-import 'package:chat/components/new_message.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:chat/core/models/chat_message.dart';
 import 'package:chat/core/models/chat_user.dart';
 import 'package:chat/core/services/chat/chat_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatFirebaseService implements ChatService {
+  //
   Stream<List<ChatMessage>> messagesStream() {
     final store = FirebaseFirestore.instance;
     final snapshots = store

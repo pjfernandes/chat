@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +28,7 @@ class ChatPage extends StatelessWidget {
                   AuthService().logout();
                 }
               },
-              icon: Icon(Icons.more_vert, color: Colors.white),
+              icon: const Icon(Icons.more_vert, color: Colors.white),
               items: [
                 DropdownMenuItem(
                   value: 'logout',

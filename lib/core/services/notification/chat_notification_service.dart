@@ -38,14 +38,12 @@ class ChatNotificationService with ChangeNotifier {
     if (await _isAuthorized) {
       FirebaseMessaging.onMessage.listen(
         (msg) {
-          FirebaseMessaging.onMessage.listen((msg) {
-            if (msg.notification == null) return;
-            add(
-              ChatNotification(
-                  title: msg.notification!.title ?? 'Não informado!',
-                  body: msg.notification!.body ?? 'Não informado'),
-            );
-          });
+          if (msg.notification == null) return;
+          add(
+            ChatNotification(
+                title: msg.notification!.title ?? 'Não informado!',
+                body: msg.notification!.body ?? 'Não informado'),
+          );
         },
       );
     }
